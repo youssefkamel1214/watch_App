@@ -43,27 +43,27 @@ public class MainActivity extends AppCompatActivity implements Maincontroller {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         JsonplaceHolderApi jsonplaceHolderApi=retrofit.create(JsonplaceHolderApi.class);
-            Call<Result> call=jsonplaceHolderApi.get_Result(
-                    "1762cd01582de4936e7349f8e6e78b7a",1);
-            call.enqueue(new Callback<models.Result>() {
-                @Override
-                public void onResponse(Call<Result> call, Response<Result> response) {
-                    if (response.isSuccessful()){
-                         movie_adapter=new Movie_Adapter((ArrayList)response.body().getMovies(),MainActivity.this);
-                         binding.rcycler.setAdapter(movie_adapter);
-                         binding.rcycler.setVisibility(View.VISIBLE);
-                         binding.loading.setVisibility(View.GONE);
-                    }
-                    else{
-                        System.out.println(call.request().toString());
-                    }
+        Call<Result> call=jsonplaceHolderApi.get_Result(
+                "1762cd01582de4936e7349f8e6e78b7a",1);
+        call.enqueue(new Callback<models.Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                if (response.isSuccessful()){
+                    movie_adapter=new Movie_Adapter((ArrayList)response.body().getMovies(),MainActivity.this);
+                    binding.rcycler.setAdapter(movie_adapter);
+                    binding.rcycler.setVisibility(View.VISIBLE);
+                    binding.loading.setVisibility(View.GONE);
                 }
+                else{
+                    System.out.println(call.request().toString());
+                }
+            }
 
-                @Override
-                public void onFailure(Call<Result> call, Throwable t) {
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
                 System.err.println(t.getMessage());
-                }
-            });
+            }
+        });
 
     }
 

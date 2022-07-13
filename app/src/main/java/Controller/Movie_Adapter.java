@@ -1,5 +1,7 @@
 package Controller;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +9,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.apimovie.R;
 import com.example.apimovie.databinding.MovieReclerItemBinding;
 
 import org.chromium.base.task.TaskRunner;
@@ -20,17 +25,23 @@ import models.Movie;
 
 public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.Viewholder>{
     ArrayList<Movie>movies;
-    ArrayList<Boolean>hasimages;
+    ArrayList<Bitmap>hasimages;
     Maincontroller maincontroller;
     String images_path="https://image.tmdb.org/t/p/w500";
     public Movie_Adapter(ArrayList<Movie> movies,Maincontroller maincontroller) {
         this.movies = movies;
-        hasimages=new ArrayList<Boolean>();
+        hasimages=new ArrayList<Bitmap>();
         this.maincontroller=maincontroller;
         for (int i=0;i<movies.size();i++)
-            hasimages.add(true);
+            hasimages.add(null);
     }
-
+    public void show_error(Exception exception){
+        System.err.println(exception);
+    }
+    public  void putimage(Bitmap bitmap,int postion){
+        hasimages.set(postion, bitmap);
+        notifyItemChanged(postion);
+    }
     @NonNull
     @Override
     public Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,11 +57,8 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.Viewholder
           holder.binding.title.setText( movie.getTitle());
           holder.binding.date.setText(movie.getRelease_date());
           holder.binding.overview.setText(movie.getOverview());
-          if(hasimages.get(position)) {
-              NetImage netImage = new NetImage(images_path + movie.getPoster(), holder.binding.image);
-              netImage.executeWithTaskTraits(TaskTraits.THREAD_POOL_BEST_EFFORT);
-              hasimages.set(position, false);
-          }
+          Glide.with((Activity)maincontroller).load(images_path + movie.getPoster()).into(holder.binding.image);
+
     }
 
     @Override
