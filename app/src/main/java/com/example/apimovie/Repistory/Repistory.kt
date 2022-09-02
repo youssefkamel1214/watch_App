@@ -30,10 +30,11 @@ class Repistory (private val database: DaoDb){
             return resultmovie.total_pages
         }catch (e:Exception){
             Log.d("error",e.message.toString())
+            var a=0
             withContext(Dispatchers.IO){
-                return@withContext database.get_max_number_of_pages_exist()
+                a= database.get_max_number_of_pages_exist()
             }
+            return a
         }
-        return -1
     }
 }
