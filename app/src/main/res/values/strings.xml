@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Api movie</string>
+    <string name="imageviewcontentMovie">%S Movie image </string>
+    <string name="pop">%f</string>
 </resources>
