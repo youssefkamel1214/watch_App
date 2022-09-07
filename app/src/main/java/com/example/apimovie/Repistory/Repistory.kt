@@ -15,9 +15,15 @@ import java.lang.Exception
 //this class used to take data from api (nasa) than cach it on db
 //and also used to clear old data from db
 class Repistory (private val database: DaoDb){
-    suspend fun refersh( page:Int=1):Int{
+    private var page=1
+    private var total=1
+    private var minpop=Double.MAX_VALUE
+    fun valid():Boolean = page<=total
+    suspend fun refersh(minpop:Double){
         val retorofit=Network.Service
         try {
+            if(minpop>this.minpop)
+                return
             val resultmovie=retorofit.get_Result(Constants.base_key,page)!!.await()
             val pagenumber=resultmovie.page
             val listmovie=resultmovie.movies
@@ -27,14 +33,11 @@ class Repistory (private val database: DaoDb){
             withContext(Dispatchers.IO){
                 database.insertAllmovies(listmovie?.toMutableList() as ArrayList<Movie> )
             }
-            return resultmovie.total_pages
+            page++
+            total=resultmovie.total_pages
         }catch (e:Exception){
             Log.d("error",e.message.toString())
-            var a=0
-            withContext(Dispatchers.IO){
-                a= database.get_max_number_of_pages_exist()
-            }
-            return a
         }
+        return
     }
 }

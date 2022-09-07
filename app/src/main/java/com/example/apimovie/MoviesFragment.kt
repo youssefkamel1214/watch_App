@@ -35,8 +35,13 @@ class MoviesFragment : Fragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
-                        viewModel.changepagenumber()
+                        if(!((recyclerView.adapter as MoiveAdapter).currentList.last() is MoiveAdapter.DataItem.Header))
+                        {
+                            val movie=((recyclerView.adapter as MoiveAdapter).currentList
+                                .last() as MoiveAdapter.DataItem.Movieitem ).movie
+                            viewModel.changepagenumber(movie.popularity)
 
+                        }
                 }
             }
         })

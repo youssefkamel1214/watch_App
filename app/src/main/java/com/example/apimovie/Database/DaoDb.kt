@@ -11,9 +11,9 @@ import com.example.apimovie.models.Movie
 interface DaoDb {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAllmovies( list: ArrayList <Movie>)
-    @Query("select * from Movie_Table where page=:pagegiven  Order by popularity Desc")
-    fun getpopalrmovies( pagegiven:Int): LiveData<List<Movie>>
-    @Query("select max(page) from Movie_Table limit 1")
-    fun get_max_number_of_pages_exist():Int
+    @Query("select * from Movie_Table where popularity<:popalritygiver  Order by popularity Desc limit 10")
+    fun getpopalrmovies( popalritygiver:Double): LiveData<List<Movie>>
+    @Query("select min(popularity) from Movie_Table limit 1")
+    fun get_min_popalarity():Double
 
 }

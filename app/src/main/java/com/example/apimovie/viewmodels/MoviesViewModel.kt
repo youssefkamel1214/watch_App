@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.example.apimovie.Database.RoomDb
 import com.example.apimovie.Repistory.Repistory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 class MoviesViewModel(application: Application) : AndroidViewModel(application) {
@@ -14,28 +16,31 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
     val loading:LiveData<Boolean> get() = _loading
     private val _firstloading=MutableLiveData<Boolean>(false)
     val firstloading:LiveData<Boolean> get() = _firstloading
-    private  var pagenumber=MutableLiveData<Int>(1)
-    val movielist=Transformations.map(pagenumber){
+    private  var popalrity=MutableLiveData<Double>(Double.MAX_VALUE)
+    val movielist=Transformations.map(popalrity){
             database.getpopalrmovies(it)
     }
-    private var totalpages by Delegates.notNull<Int>()
-
     init {
         viewModelScope.launch {
             _loading.postValue(true)
             _firstloading.postValue(true)
-             totalpages =repistory.refersh(1)
+            repistory.refersh(popalrity.value!!)
             _loading.postValue(false)
             _firstloading.postValue(false)
         }
     }
-   fun changepagenumber(){
-       if(pagenumber.value!!+1>totalpages||_firstloading.value!!||_loading.value!!)
+   fun changepagenumber(pop:Double){
+       if(_firstloading.value!!||_loading.value!!)
            return
        viewModelScope.launch {
            _loading.postValue(true)
-           repistory.refersh(pagenumber.value!!+1)
-           pagenumber.value=pagenumber.value!!+1
+           if(repistory.valid())
+              repistory.refersh(pop)
+           val b= withContext(Dispatchers.IO){
+             return@withContext pop> database.get_min_popalarity()
+           }
+           if(b)
+               popalrity.postValue(pop)
            _loading.postValue(false)
        }
    }
